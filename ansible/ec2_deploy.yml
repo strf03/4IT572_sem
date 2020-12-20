@@ -3,13 +3,23 @@
   connection: local
 
   tasks:
+    - name: Locate running EC2 instances
+      vars:
+        ansible_python_interpreter: /usr/local/bin/python3
+      ec2_instance_info:
+        region: us-east-1
+        aws_access_key: "ASIAQDIIFTBQUQPTHTB7"
+        aws_secret_key: "05zn0VzapRbEsqBTjaOZzT6A5/ZdRCtoaPPhcEAz"
+        security_token: "FwoGZXIvYXdzEN///////////wEaDJtjgvV85Zn9SbDUnCLIAWvj59y5qqmuVaCTt98VUYPqdT+jBDVlBr6Co8e1i18jzOpUnpwzZ6n6ExmTFjTZIBzlHFHSNNxJOrcybXL06/yIsdfU8zlowwpdj1W0MkrM4bLk3ODaiOgrVGZ8AOLyAIgjKMCW5Vo14kBevtdqREQ+LEpeDPMU7nf5pX3W5sSYebk1eNJX6MCnKp3rEdURE3GNuHycbwvyyp4+gUuQ5ciwyWwchpgAnjsVZXQBS+rzLyA8sI7tXMdIFri26HZQeuUQmCHkLu3HKKyY/f4FMi2KrqhAtxs94kKQvEvxtNOc0yn7V1/TR8+unOTCuWs7ZtxskQBXyv05H1KSXT0="
+      register: ec2_info
+
     - name: Launch EC2 instance
       ec2:
         instance_type: t2.small
         image: ami-085925f297f89fce1
         region: us-east-1
         key_name: test
-        vpc_subnet_id: subnet-e8d813d9
+        vpc_subnet_id: subnet-693ebd48
         assign_public_ip: yes
         wait: yes
         count: 1
