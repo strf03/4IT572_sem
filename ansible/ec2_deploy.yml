@@ -14,9 +14,9 @@
         wait: yes
         count: 1
         group: eshop
-        aws_access_key: "ASIAQDIIFTBQ5OJJX6P3"
-        aws_secret_key: "aewd1GZOxte3jbzeGxrwyKvW6Tr8Dgmmix6kOM2n"
-        security_token: "FwoGZXIvYXdzEGMaDMWSF0zWsGG/IHPq5SLIAdF3p8T0acqwg7B08/aZxHEClYUhjNsPp5mRak0sp1b1CfMM6VlQeBC0+nxTzRn/sAKvTOPduHk3fAr4xlFem7ZENsKaRXec/JZHY/ea25DiXh5xw6Z8nOEf22Vfm2g27KKXHtrSNRp0s7GIvx764ep/SN1g/mZf84/TuceTL8G9xVvcMb4S36u+9dtC8OUb7Nc7aYxUALk+CIN7P24xNJyyq5dKi1aCTJmRjd/+8lKse7wjeyhsAVfFeGhXnwtC10lNGY1Cw6PeKJOH4v4FMi0wOq2JiiP6OsE5nlMkdqtakxEWL4v0PbWk12FX7GhAdknjX+ZbLlYUyhMG7To="
+        aws_access_key: "ASIAQDIIFTBQZCUODBQP"
+        aws_secret_key: "fAX5xiNK9UV9jhD2e+QSh0pYdfhlX1ESyBuiewzo"
+        security_token: "FwoGZXIvYXdzEN7//////////wEaDILsd2D0/Wz0XFMhJiLIAaOa7ClIbjB7iTue0E4evhWVuiBMoIyn8uMj4BLPZFFdHBgs4x5RE2jgutcXgHc9H1wa2Ktl/nPolWBQtNt9h/prJXfLNfDrED0Z6RB4NS+rCxrCXxjQA0O31NZf6VahTRW7yy932qW0BU1mUlcUnu1FQ7oqcxvIYSgBYec4qFk7b1C5Lg+SNkC4RjGySQxqGOdUcugka71CxAkXBiMG6JYhkOUFMPb7XYqbHkFLq9Nz9myGm2rtD5aLwtnFbiDSkUjXkxfbT5FJKMeA/f4FMi1k8Kbj5K+llPJgARW9pDkCzIMs8oFpBpxU2EjYzh9dI/T7wMhG6N8R/d+nnSQ="
       register: ec2
 
     - name: Add instance host to group
@@ -52,8 +52,26 @@
       become: yes
     - name: Run Docker with eshop
       shell: docker run -p 80:3000 myeshop
-      async: 90
+      async: 120
       poll: 0
       become: yes
     - wait_for:
         port: 80
+
+- name: Terminate previous instances
+  hosts: localhost
+  connection: local
+
+  tasks:
+    - name: Kill previous instances
+      ec2:
+        region: us-east-1
+        state: 'absent'
+        instance_ids: '{{ item.instance_id }}'
+        aws_access_key: "ASIAQDIIFTBQZCUODBQP"
+        aws_secret_key: "fAX5xiNK9UV9jhD2e+QSh0pYdfhlX1ESyBuiewzo"
+        security_token: "FwoGZXIvYXdzEN7//////////wEaDILsd2D0/Wz0XFMhJiLIAaOa7ClIbjB7iTue0E4evhWVuiBMoIyn8uMj4BLPZFFdHBgs4x5RE2jgutcXgHc9H1wa2Ktl/nPolWBQtNt9h/prJXfLNfDrED0Z6RB4NS+rCxrCXxjQA0O31NZf6VahTRW7yy932qW0BU1mUlcUnu1FQ7oqcxvIYSgBYec4qFk7b1C5Lg+SNkC4RjGySQxqGOdUcugka71CxAkXBiMG6JYhkOUFMPb7XYqbHkFLq9Nz9myGm2rtD5aLwtnFbiDSkUjXkxfbT5FJKMeA/f4FMi1k8Kbj5K+llPJgARW9pDkCzIMs8oFpBpxU2EjYzh9dI/T7wMhG6N8R/d+nnSQ="
+
+      loop: "{{ ec2_info.instances }}"
+      loop_control:
+        label: "{{ item.instance_id }}"
