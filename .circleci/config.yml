@@ -32,7 +32,7 @@ jobs:
           sudo pip install boto boto3
       - add_ssh_keys:
          fingerprints:
-          - "1a:78:31:6a:64:aa:bd:fb:0f:fb:c8:5b:8a:5f:e8:39"
+          - "0b:f7:6b:5e:71:da:4f:ea:14:6d:76:3c:41:2d:bd:47:58:c7:08:f9"
       - ansible-playbook/playbook:
           playbook: ansible/ec2_deploy.yml
           playbook-options: --user ubuntu
