@@ -1,25 +1,32 @@
+vse:
+  docker: &vse
+    - image: 'circleci/node:8.11.3'
+ansible:
+  docker: &ansible
+    - image: 'circleci/python:latest'
+      environment:
+          ANSIBLE_HOST_KEY_CHECKING: no
 version: 2.1
-
+orbs:
+  ansible-playbook: orbss/ansible-playbook@0.0.5
 jobs:
   build:
-    docker:
-      - image: circleci/node:8.11.3
+    docker: *vse
     steps:
       - checkout
       - run: npm install
       - run: npm run test
-      - run: npm run build
+      - run: npm build
       - persist_to_workspace:
-         root: .
-         paths:
+          root: .
+          paths:
             - .
   deploy:
-    docker:
-      - image: circleci/python:3.8
+    docker: *ansible
     steps:
       - attach_workspace:
           at: .
-      - run: pip3 install ansible boto boto3
+      - ansible-playbook/install
       - run:
          command: |
           sudo pip install boto boto3
@@ -40,3 +47,4 @@ workflows:
           filters:
             branches:
               only: master
+
